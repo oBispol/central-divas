@@ -19,40 +19,24 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, senha) => {
     try {
-      const response = await api.post('/auth/login', { email, senha });
-      const { token, user: userData } = response.data;
-
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(userData));
-      setUser(userData);
-
+      const result = await api.login(email, senha);
       return { success: true };
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.error || 'Erro ao fazer login',
+        error: error.message || 'Erro ao fazer login',
       };
     }
   };
 
   const register = async (data) => {
     try {
-      const formData = new FormData();
-      Object.keys(data).forEach((key) => {
-        if (data[key] !== null && data[key] !== undefined) {
-          formData.append(key, data[key]);
-        }
-      });
-
-      const response = await api.post('/auth/register', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-
-      return { success: true, message: response.data.message };
+      await api.register(data.nome, data.email, data.senha, data.whatsapp);
+      return { success: true, message: 'Cadastro realizado com sucesso!' };
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.error || 'Erro ao fazer cadastro',
+        error: error.message || 'Erro ao fazer cadastro',
       };
     }
   };
