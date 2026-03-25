@@ -8,16 +8,17 @@ const api = {
       .from('usuarios')
       .select('*')
       .eq('email', email)
-      .eq('senha', senha)
-      .single();
+      .eq('senha', senha);
 
     if (error) throw new Error('Email ou senha inválidos');
+    if (!data || data.length === 0) throw new Error('Email ou senha inválidos');
     
-    const token = btoa(JSON.stringify({ id: data.id, email: data.email, tipo: data.tipo }));
+    const user = data[0];
+    const token = btoa(JSON.stringify({ id: user.id, email: user.email, tipo: user.tipo }));
     localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(data));
+    localStorage.setItem('user', JSON.stringify(user));
     
-    return { token, user: data };
+    return { token, user };
   },
 
   async register(nome, email, senha, whatsapp) {
