@@ -1,6 +1,10 @@
 import supabase from '../lib/supabase';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const getUploadUrl = (path) => {
+  if (!path) return null;
+  if (path.startsWith('http')) return path;
+  return `https://xtpwioctpkgtnbriuqop.supabase.co/storage/v1/object/public/uploads/${path}`;
+};
 
 const api = {
   async login(email, senha) {
@@ -118,7 +122,9 @@ const api = {
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-  }
+  },
+
+  getUploadUrl
 };
 
-export default api;
+export { api as default, getUploadUrl };
