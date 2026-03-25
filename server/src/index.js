@@ -27,8 +27,13 @@ app.use('/api/posts', postRoutes);
 app.use('/api/conclusoes', conclusaoRoutes);
 app.use('/api/avisos', avisoRoutes);
 
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Central Divas API Running!' });
+app.get('/api/health', async (req, res) => {
+  try {
+    const dbTest = await require('./config/database').query('SELECT 1 as test');
+    res.json({ status: 'ok', message: 'Central Divas API Running!', db: 'connected' });
+  } catch (error) {
+    res.json({ status: 'ok', message: 'Central Divas API Running!', db: 'error', error: error.message });
+  }
 });
 
 app.get('/api/status', (req, res) => {
