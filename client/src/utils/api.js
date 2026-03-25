@@ -8,12 +8,15 @@ const getUploadUrl = (path) => {
 
 const api = {
   async login(email, senha) {
+    console.log('Login attempt:', email);
     const { data, error } = await supabase
       .from('usuarios')
       .select('*')
       .eq('email', email)
       .eq('senha', senha);
 
+    console.log('Supabase response:', data, error);
+    if (error) console.log('Error:', error);
     if (error) throw new Error('Email ou senha inválidos');
     if (!data || data.length === 0) throw new Error('Email ou senha inválidos');
     
@@ -21,18 +24,22 @@ const api = {
     const token = btoa(JSON.stringify({ id: user.id, email: user.email, tipo: user.tipo }));
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
+    console.log('Login success!');
     
     return { token, user };
   },
 
   async register(nome, email, senha, whatsapp) {
+    console.log('Register attempt:', nome, email);
     const { data, error } = await supabase
       .from('usuarios')
       .insert([{ nome, email, senha, whatsapp, tipo: 'usuario', status: 'ativo' }])
       .select()
       .single();
 
+    console.log('Register response:', data, error);
     if (error) {
+      console.log('Register error:', error);
       if (error.code === '23505') throw new Error('Email já cadastrado');
       throw new Error(error.message);
     }
